@@ -2,7 +2,7 @@ import numpy as np
 
 from numba import njit
 
-@njit
+
 def reconstruct(img, C, alpha, iteration_num):
 
     # Initialisation
@@ -26,15 +26,16 @@ def reconstruct(img, C, alpha, iteration_num):
     result = np.zeros((m, n), dtype=np.uint8)
     for i in range(0, m):
         for j in range(1, n - 1):
-            result[i, j] = restore_k(i, j, C, L, R, U, D, Phi, Q)
+            result[i, j] = restore_k(i, j, C, L, R, Phi, Q)
 
     return result
 
 # Init
+@njit()
 def init_C(num):
     return np.rint( np.arange(0, 255, 255/num) )
 
-
+@njit()
 def init_G(C, alpha):
     """
     >>> init_G(np.array([0,2,4]),2)
@@ -42,7 +43,7 @@ def init_G(C, alpha):
            [-4.,  0., -4.],
            [-8., -4.,  0.]], dtype=float32)
     """
-    C_len = len(C) 
+    C_len = len(C)
     G = np.zeros( (C_len, C_len), dtype=np.float32 )
     for i in range(C_len):
         for j in range(C_len):
@@ -80,7 +81,7 @@ def init_R(m, n, C, Phi, Q, G):
 
     for i in range(m-2, -1, -1):
         for j in range(n-2, -1, -1):
-            for c in range(len(C)): 
+            for c in range(len(C)):
                 R[i, j, c] = recompute_R(i, j, c, R, Phi, C, Q, G)
 
     return R
@@ -101,11 +102,11 @@ def init_D(m, n, C, Phi, Q, G):
 
 # L, R, U, D update
 @njit
-def recompute_L(i, j, k, R, Phi, C, Q, G):
+def recompute_L(i, j, k, L, Phi, C, Q, G):
 
     foo = np.zeros((len(C),), dtype=np.float32)
     for k_ in range(len(C)):
-        foo[k_] = R[i, j-1, k_] + 0.5*Q[i, j-1, k_] - Phi[i, j-1, k_] +G[k_, k]
+        foo[k_] = L[i, j-1, k_] + 0.5*Q[i, j-1, k_] - Phi[i, j-1, k_] + G[k_, k]
 
     return np.max(foo)
 
@@ -115,27 +116,27 @@ def recompute_R(i, j, k, R, Phi, C, Q, G):
 
     foo = np.zeros((len(C),), dtype=np.float32)
     for k_ in range(len(C)):
-        foo[k_] = R[i, j+1, k_] + 0.5*Q[i, j+1, k_] + Phi[i, j+1, k_] +G[k_, k]
+        foo[k_] = R[i, j+1, k_] + 0.5*Q[i, j+1, k_] + Phi[i, j+1, k_] + G[k_, k]
 
     return np.max(foo)
 
 
 @njit
-def recompute_U(i, j, k, R, Phi, C, Q, G):
+def recompute_U(i, j, k, U, Phi, C, Q, G):
 
     foo = np.zeros((len(C),), dtype=np.float32)
     for k_ in range(len(C)):
-        foo[k_] = R[i-1, j, k_] + 0.5*Q[i-1, j, k_] - Phi[i-1, j, k_] +G[k_, k]
+        foo[k_] = U[i-1, j, k_] + 0.5*Q[i-1, j, k_] - Phi[i-1, j, k_] + G[k_, k]
 
     return np.max(foo)
 
 
 @njit
-def recompute_D(i, j, k, R, Phi, C, Q, G):
+def recompute_D(i, j, k, D, Phi, C, Q, G):
 
     foo = np.zeros((len(C),), dtype=np.float32)
     for k_ in range(len(C)):
-        foo[k_] = R[i+1, j, k_] + 0.5*Q[i+1, j, k_] + Phi[i+1, j, k_] + G[k_, k]
+        foo[k_] = D[i+1, j, k_] + 0.5*Q[i+1, j, k_] + Phi[i+1, j, k_] + G[k_, k]
 
     return np.max(foo)
 
@@ -161,9 +162,9 @@ def iteration(L, R, U, D, Phi, C, Q, G, m, n):
 
 
 # Reconstruction
-@njit
-def restore_k(i, j, C, L, R, U, D, Phi, Q, ):
+#@njit
+def restore_k(i, j, C, L, R, Phi, Q):
     foo = list()
     for k_ in range(len(C)):
-        foo.append(L[i, j, k_] + R[i, j, k_] + Q[i, j, k_] - Phi[i, j, k_])
+        foo.append(L[i, j, k_] + R[i, j, k_] + 0.5*Q[i, j, k_] - Phi[i, j, k_])
     return C[foo.index(max(foo))]
