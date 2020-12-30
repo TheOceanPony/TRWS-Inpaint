@@ -54,9 +54,10 @@ def init_Q(m, n, C, img):
     """
     >>> init_Q(2,2,np.array([0,2]),np.array([[2,4],[0,5]]))
     array([[[-2.,  0.],
-        [-4., -2.]],
-       [[ 0.,  0.],
-        [-5., -3.]]], dtype=float32)
+            [-4., -2.]],
+    <BLANKLINE>
+           [[ 0.,  0.],
+            [-5., -3.]]], dtype=float32)
     """
     C_len = len(C)
     Q = np.zeros( (m, n, C_len), dtype=np.float32 )
