@@ -43,7 +43,7 @@ def init_G(C, alpha):
        [ -8.,  -4.,   0.,  -4.],
        [-12.,  -8.,  -4.,   0.]]
     """
-    C_len = len(C)
+    C_len = len(C) 
     G = np.zeros( (C_len, C_len), dtype=np.float32 )
     for i in range(C_len):
         for j in range(C_len):
