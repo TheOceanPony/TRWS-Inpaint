@@ -35,22 +35,31 @@ def init_C(num):
     return np.rint( np.arange(0, 255, 255/num) )
 
 
-@njit
 def init_G(C, alpha):
-
+    """
+    >>> init_G(np.array([[24, 1],[123, 190]]), 2,)
+    [[  0.,  -4.,  -8., -12.],
+       [ -4.,   0.,  -4.,  -8.],
+       [ -8.,  -4.,   0.,  -4.],
+       [-12.,  -8.,  -4.,   0.]]
+    """
     C_len = len(C)
     G = np.zeros( (C_len, C_len), dtype=np.float32 )
-
     for i in range(C_len):
         for j in range(C_len):
             G[i, j] = -abs(C[i] - C[j]) * alpha
 
     return G
-
-
 @njit
 def init_Q(m, n, C, img):
+    """
+    >>> init_Q(2,2,np.array([0,2]),np.array([[2,4],[0,5]]))
+    [[[-2.,  0.],
+        [-4., -2.]],
 
+       [[ 0.,  0.],
+        [-5., -3.]]]
+    """
     C_len = len(C)
     Q = np.zeros( (m, n, C_len), dtype=np.float32 )
 
@@ -64,7 +73,6 @@ def init_Q(m, n, C, img):
                     Q[i, j, c] = 0
 
     return Q
-
 
 @njit
 def init_R(m, n, C, Phi, Q, G):
