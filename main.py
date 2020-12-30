@@ -14,10 +14,10 @@ m, n = img_original.shape[:2]
 img_reconstructed = np.zeros( (m, n, 3), dtype=np.uint8 )
 
 start = time()
-for chanel in tqdm([0, 1, 2]):
+for channel in tqdm([0, 1, 2]):
 
-    img = img_original[:, :, chanel]
-    img_reconstructed[:, :, chanel] = f.reconstruct(img, C, alpha, iterations)
+    img = img_original[:, :, channel]
+    img_reconstructed[:, :, channel] = f.reconstruct(img, C, alpha, iterations)
 
 end = time()
 
