@@ -39,8 +39,8 @@ def init_G(C, alpha):
     """
     >>> init_G(np.array([0,2,4]),2)
     array([[ 0., -4., -8.],
-       [-4.,  0., -4.],
-       [-8., -4.,  0.]], dtype=float32)
+           [-4.,  0., -4.],
+           [-8., -4.,  0.]], dtype=float32)
     """
     C_len = len(C) 
     G = np.zeros( (C_len, C_len), dtype=np.float32 )
@@ -55,7 +55,6 @@ def init_Q(m, n, C, img):
     >>> init_Q(2,2,np.array([0,2]),np.array([[2,4],[0,5]]))
     array([[[-2.,  0.],
         [-4., -2.]],
-
        [[ 0.,  0.],
         [-5., -3.]]], dtype=float32)
     """
